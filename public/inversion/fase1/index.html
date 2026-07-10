@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cluster Vecinal — Inversión fundadora · Primer semestre</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Caslon+Text:ital,wght@0,400;0,700;1,400&family=Archivo:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cobalto:#1d4d92;
+    --cobalto-oscuro:#123561;
+    --cobalto-tenue:#e8eef7;
+    --ceramica:#fdfcf8;
+    --tinta:#1c2430;
+    --tinta-suave:#5b6675;
+    --amarillo:#dfa53a;
+    --linea:#d9dde4;
+    --verde:#2e7d5b;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  @media (prefers-reduced-motion: reduce){ *{transition:none!important;animation:none!important;} }
+  body{
+    background:var(--ceramica);color:var(--tinta);
+    font-family:'Archivo',system-ui,-apple-system,sans-serif;
+    line-height:1.55;-webkit-font-smoothing:antialiased;
+  }
+  .pagina{max-width:860px;margin:0 auto;padding:56px 24px 72px;}
+
+  .cejilla{
+    font-size:12px;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--cobalto);font-weight:600;margin-bottom:14px;
+    display:flex;align-items:center;gap:10px;
+  }
+  .cejilla::before{content:"";width:26px;height:2px;background:var(--amarillo);display:inline-block;}
+  h1{
+    font-family:'Libre Caslon Text',Georgia,serif;
+    font-size:clamp(30px,5vw,44px);line-height:1.12;font-weight:700;
+    color:var(--cobalto-oscuro);max-width:22ch;
+  }
+  .sub{margin-top:14px;color:var(--tinta-suave);max-width:60ch;font-size:16px;}
+
+  /* ---- semestre explícito ---- */
+  .linea-tiempo{display:flex;margin-top:24px;border:1.5px solid var(--cobalto);border-radius:4px;overflow:hidden;max-width:620px;}
+  .tramo{flex:1;padding:10px 14px;}
+  .tramo b{font-family:'Libre Caslon Text',Georgia,serif;font-size:17px;color:var(--cobalto-oscuro);display:block;}
+  .tramo span{font-size:12.5px;color:var(--tinta-suave);}
+  .tramo.dev{background:var(--cobalto-tenue);border-right:1.5px solid var(--cobalto);}
+  .tramo.viva{background:#fdf3e0;}
+  .hito{
+    display:flex;align-items:center;gap:10px;margin-top:12px;max-width:620px;
+    padding:10px 14px;border:1.5px dashed var(--verde);border-radius:4px;background:#f4faf7;
+  }
+  .hito .punto-hito{width:12px;height:12px;border-radius:50%;background:var(--verde);flex-shrink:0;}
+  .hito p{font-size:13.5px;color:var(--tinta);}
+  .hito p b{color:var(--verde);}
+
+  .hero{
+    margin-top:40px;padding:34px 30px 30px;
+    background:var(--cobalto-oscuro);color:#fff;border-radius:6px;
+    position:relative;overflow:hidden;
+  }
+  .hero::after{
+    content:"";position:absolute;inset:auto 0 0 0;height:6px;
+    background:repeating-linear-gradient(90deg,var(--amarillo) 0 14px,transparent 14px 28px);opacity:.85;
+  }
+  .hero .etiqueta{font-size:12px;letter-spacing:.14em;text-transform:uppercase;opacity:.75;font-weight:600;}
+  .hero .mxn{
+    font-family:'Libre Caslon Text',Georgia,serif;
+    font-size:clamp(40px,7vw,60px);font-weight:700;line-height:1.05;margin-top:8px;
+  }
+  .hero .mxn small{font-size:.42em;font-weight:400;opacity:.8;margin-left:6px;}
+  .hero .usd{margin-top:6px;font-size:17px;opacity:.85;}
+  .hero .nota-tc{margin-top:14px;font-size:12.5px;opacity:.65;max-width:56ch;}
+
+  .controles{
+    margin-top:26px;display:flex;flex-wrap:wrap;gap:18px;align-items:flex-end;
+    padding:18px 20px;border:1px solid var(--linea);border-radius:6px;background:#fff;
+  }
+  .campo label{display:block;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--tinta-suave);font-weight:600;margin-bottom:6px;}
+  .campo input{
+    font-family:'Archivo',sans-serif;font-size:18px;font-weight:600;color:var(--cobalto-oscuro);
+    width:110px;padding:8px 10px;border:1.5px solid var(--linea);border-radius:4px;background:var(--ceramica);
+  }
+  .campo input:focus{outline:2px solid var(--cobalto);outline-offset:1px;border-color:var(--cobalto);}
+  .controles .aviso{font-size:12.5px;color:var(--tinta-suave);max-width:36ch;}
+
+  h2{
+    font-family:'Libre Caslon Text',Georgia,serif;font-size:26px;color:var(--cobalto-oscuro);
+    margin-top:56px;margin-bottom:6px;
+  }
+  .h2-sub{color:var(--tinta-suave);font-size:15px;margin-bottom:24px;max-width:62ch;}
+
+  /* ---- curva descendente (firma) ---- */
+  .grafica{
+    display:flex;align-items:flex-end;gap:3px;
+    height:210px;padding:0 4px;border-bottom:1.5px solid var(--cobalto-oscuro);
+    position:relative;
+  }
+  .col{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:6px;cursor:pointer;background:none;border:none;font-family:inherit;padding:0;}
+  .col .valor{font-size:11.5px;color:var(--cobalto-oscuro);font-weight:700;white-space:nowrap;visibility:hidden;}
+  .col.activa .valor{visibility:visible;}
+  .col .barra{width:100%;background:var(--cobalto-tenue);border:1px solid var(--cobalto);border-radius:2px 2px 0 0;transition:height .25s ease, background .2s ease;}
+  .col.activa .barra{background:var(--cobalto);}
+  .col:focus-visible{outline:2px solid var(--cobalto);outline-offset:2px;}
+  .eje{display:flex;gap:3px;padding:6px 4px 0;}
+  .eje span{flex:1;text-align:center;font-size:11px;color:var(--tinta-suave);font-weight:600;}
+  .eje span.activa{color:var(--cobalto-oscuro);font-weight:700;}
+  .eje-titulo{text-align:center;font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--tinta-suave);margin-top:8px;font-weight:600;}
+
+  .resultado{
+    margin-top:26px;padding:22px 24px;border:1.5px solid var(--cobalto);
+    border-radius:6px;background:#fff;display:grid;grid-template-columns:1fr auto;gap:16px;align-items:center;
+  }
+  .resultado .texto{font-size:15px;color:var(--tinta-suave);max-width:44ch;}
+  .resultado .texto b{color:var(--tinta);}
+  .resultado .monto{text-align:right;}
+  .resultado .mxn{font-family:'Libre Caslon Text',Georgia,serif;font-size:32px;font-weight:700;color:var(--cobalto-oscuro);}
+  .resultado .usd{font-size:14px;color:var(--tinta-suave);}
+  .resultado .pago{display:inline-block;font-size:11px;letter-spacing:.08em;text-transform:uppercase;font-weight:700;
+    padding:3px 8px;border-radius:3px;background:#e7f3ed;color:var(--verde);margin-top:6px;}
+  @media(max-width:560px){ .resultado{grid-template-columns:1fr;} .resultado .monto{text-align:left;} }
+
+  /* ---- partidas ---- */
+  .fase-titulo{
+    display:flex;align-items:baseline;gap:10px;margin-top:26px;padding-bottom:8px;border-bottom:1.5px solid var(--cobalto-oscuro);flex-wrap:wrap;
+  }
+  .fase-titulo h3{font-family:'Libre Caslon Text',Georgia,serif;font-size:18px;color:var(--cobalto-oscuro);}
+  .fase-titulo span{font-size:12.5px;color:var(--tinta-suave);}
+  .partida{
+    display:grid;grid-template-columns:16px 1fr auto;gap:14px;align-items:start;
+    padding:16px 4px;border-bottom:1px solid var(--linea);
+  }
+  .punto{width:14px;height:14px;border-radius:3px;margin-top:5px;}
+  .p-motor{background:var(--cobalto);}
+  .p-labor{background:var(--amarillo);}
+  .p-infra{background:var(--cobalto-tenue);border:1.5px solid var(--cobalto);}
+  .p-dominio{background:#fff;border:1.5px dashed var(--tinta-suave);}
+  .partida h4{font-size:15.5px;font-weight:600;color:var(--tinta);}
+  .partida p{font-size:13.5px;color:var(--tinta-suave);margin-top:4px;max-width:52ch;}
+  .partida .monto{text-align:right;white-space:nowrap;}
+  .partida .monto .mxn{font-family:'Libre Caslon Text',Georgia,serif;font-size:18px;font-weight:700;color:var(--cobalto-oscuro);}
+  .partida .monto .usd{font-size:12.5px;color:var(--tinta-suave);}
+  .partida .monto .freq{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--tinta-suave);margin-top:2px;}
+  .sello{display:inline-block;font-size:11px;letter-spacing:.08em;text-transform:uppercase;font-weight:700;padding:3px 8px;border-radius:3px;margin-top:8px;}
+  .sello-fijo{background:var(--cobalto-tenue);color:var(--cobalto-oscuro);}
+  .sello-sub{background:#fdf3e0;color:#8a5f13;}
+  .sello-gratis{background:#e7f3ed;color:var(--verde);}
+  .subtotal{display:grid;grid-template-columns:1fr auto;padding:12px 4px;border-bottom:1px solid var(--linea);font-size:14px;color:var(--tinta-suave);}
+  .subtotal b{font-family:'Libre Caslon Text',Georgia,serif;color:var(--cobalto-oscuro);font-size:16px;}
+  .total{
+    display:grid;grid-template-columns:1fr auto;gap:14px;align-items:center;
+    padding:20px 4px;border-bottom:1.5px solid var(--cobalto-oscuro);
+  }
+  .total .t-label{font-family:'Libre Caslon Text',Georgia,serif;font-size:19px;font-weight:700;color:var(--cobalto-oscuro);}
+  .total .rango{font-size:12.5px;color:var(--tinta-suave);margin-top:2px;}
+  .total .monto{text-align:right;}
+  .total .mxn{font-family:'Libre Caslon Text',Georgia,serif;font-size:24px;font-weight:700;color:var(--cobalto-oscuro);}
+  .total .usd{font-size:13px;color:var(--tinta-suave);}
+
+  .notas{margin-top:40px;padding:22px 24px;background:#fff;border:1px solid var(--linea);border-radius:6px;}
+  .notas h4{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--cobalto);font-weight:700;margin-bottom:12px;}
+  .notas ul{list-style:none;}
+  .notas li{font-size:14px;color:var(--tinta-suave);padding:7px 0 7px 20px;position:relative;}
+  .notas li::before{content:"";position:absolute;left:0;top:14px;width:8px;height:8px;background:var(--amarillo);border-radius:1px;}
+  .notas li b{color:var(--tinta);font-weight:600;}
+  .pie{margin-top:34px;font-size:12px;color:var(--tinta-suave);text-align:center;}
+</style>
+</head>
+<body>
+<div class="pagina">
+
+  <header>
+    <div class="cejilla">Inversión fundadora · Cluster Vecinal</div>
+    <h1>Entre más vecinos fundadores, menor la aportación de cada uno</h1>
+    <p class="sub">La inversión cubre el <b>primer semestre completo</b>: 3 meses de desarrollo y 3 meses con la plataforma <b>activa y visible</b> para la comunidad. El costo es fijo y se divide en partes iguales entre los fundadores, como una <b>aportación única</b>. Montos en pesos, convertidos desde dólares (USD).</p>
+    <div class="linea-tiempo" role="img" aria-label="Semestre: meses 1 a 3 desarrollo, meses 4 a 6 plataforma activa">
+      <div class="tramo dev"><b>Meses 1–3 · Desarrollo</b><span>Construcción de la plataforma: accesos, notificaciones, directorios, reglamento</span></div>
+      <div class="tramo viva"><b>Meses 4–6 · Plataforma activa</b><span>En vivo para ~750 residentes: visibilidad real para los negocios fundadores</span></div>
+    </div>
+    <div class="hito">
+      <div class="punto-hito"></div>
+      <p><b>Al cierre del semestre:</b> con datos reales de uso (residentes activos, avisos entregados, contactos generados) se toma una decisión informada sobre la siguiente etapa.</p>
+    </div>
+  </header>
+
+  <section class="hero" aria-label="Costo total del primer semestre">
+    <div class="etiqueta">Costo total · Primer semestre (3 meses de desarrollo + 3 activa + dominio)</div>
+    <div class="mxn" id="totalMXN">—<small>MXN</small></div>
+    <div class="usd" id="totalUSD">—</div>
+    <p class="nota-tc" id="notaTC"></p>
+  </section>
+
+  <div class="controles">
+    <div class="campo">
+      <label for="inpInv">Inversionistas fundadores</label>
+      <input id="inpInv" type="number" min="3" max="30" step="1" value="10" inputmode="numeric">
+    </div>
+    <div class="campo">
+      <label for="inpTC">Tipo de cambio (MXN/USD)</label>
+      <input id="inpTC" type="number" min="10" max="30" step="0.01" value="20.00" inputmode="decimal">
+    </div>
+    <p class="aviso">Ajusta el número de vecinos y observa cómo baja la aportación de cada quien.</p>
+  </div>
+
+  <h2>La aportación baja con cada vecino que se suma</h2>
+  <p class="h2-sub">Aportación única por inversionista según cuántos vecinos participen. Toca cualquier barra para ver el monto:</p>
+
+  <div class="grafica" id="grafica" aria-label="Aportación por inversionista según número de participantes"></div>
+  <div class="eje" id="eje"></div>
+  <div class="eje-titulo">Número de inversionistas fundadores</div>
+
+  <div class="resultado">
+    <div class="texto" id="resTexto"></div>
+    <div class="monto">
+      <div class="mxn" id="resMXN">—</div>
+      <div class="usd" id="resUSD">—</div>
+      <span class="pago">Aportación única · cubre el semestre</span>
+    </div>
+  </div>
+
+  <h2>¿En qué se invierte?</h2>
+  <p class="h2-sub">Desglose mensual por etapa del semestre. Durante el desarrollo la infraestructura opera en niveles gratuitos; al entrar en vivo con visibilidad comercial se requieren planes de pago.</p>
+
+  <div class="fase-titulo"><h3>Meses 1–3 · Desarrollo</h3><span>autenticación, notificaciones, directorio de proveedores, reglamento</span></div>
+  <div class="partida">
+    <div class="punto p-motor"></div>
+    <div>
+      <h4>Motor de desarrollo IA — Claude Max</h4>
+      <p>Impulsa al equipo completo de agentes especializados (producto, UX, arquitectura, frontend, backend, seguridad y QA) dirigido por un solo responsable humano.</p>
+      <span class="sello sello-fijo">Costo fijo · lo cubre Alexis directamente</span>
+    </div>
+    <div class="monto"><div class="mxn" data-usd-mxn="100">—</div><div class="usd" data-usd="100">—</div><div class="freq">mensual</div></div>
+  </div>
+  <div class="partida">
+    <div class="punto p-labor"></div>
+    <div>
+      <h4>Servicio de desarrollo y mantenimiento</h4>
+      <p>Dirección de producto, especificaciones, orquestación de agentes, control de calidad y soporte. Un equipo tradicional para este alcance cuesta varios miles de dólares al mes.</p>
+      <span class="sello sello-sub">Tarifa por debajo de mercado</span>
+    </div>
+    <div class="monto"><div class="mxn" data-usd-mxn="100">—</div><div class="usd" data-usd="100">—</div><div class="freq">mensual</div></div>
+  </div>
+  <div class="partida">
+    <div class="punto p-infra"></div>
+    <div>
+      <h4>Infraestructura — Vercel, Supabase y WhatsApp Cloud API</h4>
+      <p>Hosting, base de datos, autenticación por WhatsApp y notificaciones. Los niveles gratuitos cubren ~750 usuarios y 1,000 conversaciones al mes.</p>
+      <span class="sello sello-gratis">$0 durante el desarrollo</span>
+    </div>
+    <div class="monto"><div class="mxn" data-usd-mxn="0">—</div><div class="usd" data-usd="0">—</div><div class="freq">mensual</div></div>
+  </div>
+  <div class="subtotal"><span>Subtotal mensual · desarrollo</span><b id="subF1">—</b></div>
+
+  <div class="fase-titulo"><h3>Meses 4–6 · Plataforma activa</h3><span>en vivo para la comunidad, con visibilidad para los negocios fundadores</span></div>
+  <div class="partida">
+    <div class="punto p-infra"></div>
+    <div>
+      <h4>Infraestructura comercial — Vercel Pro (+ Supabase Pro si se requiere)</h4>
+      <p>La visibilidad comercial exige Vercel Pro ($20 USD/mes). Supabase Pro ($25 USD/mes) solo si se rebasa el nivel gratuito. El motor y el servicio de desarrollo continúan igual.</p>
+    </div>
+    <div class="monto"><div class="mxn" id="f2ExtraMXN">—</div><div class="usd">+$20–45 USD</div><div class="freq">mensual</div></div>
+  </div>
+  <div class="subtotal"><span>Subtotal mensual · plataforma activa</span><b id="subF2">—</b></div>
+
+  <div class="fase-titulo"><h3>Pago único inicial</h3><span></span></div>
+  <div class="partida">
+    <div class="punto p-dominio"></div>
+    <div>
+      <h4>Dominio web</h4>
+      <p>Registro anual del dominio del proyecto. Se paga una sola vez al inicio.</p>
+    </div>
+    <div class="monto"><div class="mxn" data-usd-mxn="15">—</div><div class="usd" data-usd="15">—</div><div class="freq">pago único</div></div>
+  </div>
+
+  <div class="total">
+    <div>
+      <div class="t-label">Total · Primer semestre</div>
+      <div class="rango" id="rangoTotal"></div>
+    </div>
+    <div class="monto">
+      <div class="mxn" id="totalMXN2">—</div>
+      <div class="usd" id="totalUSD2">—</div>
+    </div>
+  </div>
+
+  <div class="notas">
+    <h4>Notas para el inversionista</h4>
+    <ul>
+      <li><b>Decisión informada al cierre:</b> el semestre termina con métricas reales (adopción, avisos entregados, contactos a negocios). Con esos datos, los fundadores deciden la siguiente etapa — continuar, ajustar o escalar.</li>
+      <li><b>Sin cuota de administración:</b> este proyecto no se financia con la cuota del HOA. Hacia adelante, la operación se sostiene con anunciantes: negocios vecinos con tarifa semestral y proveedores externos con comisión por contacto.</li>
+      <li><b>La meta de precio:</b> la aportación fundadora debe quedar por debajo de lo que pagará un proveedor externo por anunciarse en la misma plataforma.</li>
+      <li><b>Tipo de cambio conservador:</b> los montos en MXN usan $20.00 por dólar como colchón; el tipo de cambio de mercado ronda $17.50, así que el costo real en pesos probablemente sea menor. Los servicios se facturan en USD.</li>
+      <li><b>Motor de desarrollo ($100 USD/mes):</b> partida fija que Alexis cubre directamente — no es negociable ni variable dentro del presupuesto.</li>
+      <li><b>Mano de obra subvaluada:</b> el servicio de desarrollo y mantenimiento está deliberadamente por debajo del precio de mercado para hacer viable el arranque.</li>
+    </ul>
+  </div>
+
+  <p class="pie">Cluster Vecinal · Propuesta para inversionistas fundadores · Montos en MXN convertidos desde USD.</p>
+</div>
+
+<script>
+(function(){
+  // ---- fuente de verdad en USD ----
+  const DEV_MES = 200;                 // meses 1–3 (desarrollo)
+  const ACT_MIN = 220, ACT_MAX = 245;  // meses 4–6 (plataforma activa)
+  const ACT_MID = (ACT_MIN + ACT_MAX)/2;
+  const DOMINIO = 15;
+  const TOTAL_USD = 3*DEV_MES + 3*ACT_MID + DOMINIO;
+  const TOTAL_MIN = 3*DEV_MES + 3*ACT_MIN + DOMINIO;
+  const TOTAL_MAX = 3*DEV_MES + 3*ACT_MAX + DOMINIO;
+  const N_MIN_G = 5, N_MAX_G = 30;
+
+  const fmtMXN  = v => "$" + v.toLocaleString("es-MX",{minimumFractionDigits:0,maximumFractionDigits:0});
+  const fmtMXN2 = v => "$" + v.toLocaleString("es-MX",{minimumFractionDigits:2,maximumFractionDigits:2});
+  const fmtUSD2 = v => "$" + v.toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2}) + " USD";
+
+  const inpInv = document.getElementById("inpInv");
+  const inpTC  = document.getElementById("inpTC");
+  const graf   = document.getElementById("grafica");
+  const eje    = document.getElementById("eje");
+
+  function setN(n){ inpInv.value = n; render(); }
+
+  function render(){
+    const n  = Math.max(3, Math.min(30, parseInt(inpInv.value || "10", 10)));
+    const tc = Math.max(1, parseFloat(inpTC.value || "20"));
+
+    document.getElementById("totalMXN").innerHTML = "~" + fmtMXN(TOTAL_USD*tc) + "<small>MXN</small>";
+    document.getElementById("totalUSD").textContent = "~" + fmtUSD2(TOTAL_USD);
+    document.getElementById("notaTC").textContent =
+      "Convertido desde dólares (USD) a $" + tc.toFixed(2) + " MXN por dólar — tipo de cambio conservador; el de mercado es menor.";
+    document.getElementById("totalMXN2").textContent = "~" + fmtMXN(TOTAL_USD*tc) + " MXN";
+    document.getElementById("totalUSD2").textContent = "~" + fmtUSD2(TOTAL_USD);
+    document.getElementById("rangoTotal").textContent =
+      "Rango: " + fmtMXN(TOTAL_MIN*tc) + " – " + fmtMXN(TOTAL_MAX*tc) + " MXN ($" + TOTAL_MIN.toLocaleString("en-US") + "–$" + TOTAL_MAX.toLocaleString("en-US") + " USD)";
+
+    document.querySelectorAll("[data-usd-mxn]").forEach(el=>{
+      el.textContent = fmtMXN(parseFloat(el.getAttribute("data-usd-mxn"))*tc) + " MXN";
+    });
+    document.querySelectorAll("[data-usd]").forEach(el=>{
+      const v = parseFloat(el.getAttribute("data-usd"));
+      el.textContent = "$" + v.toLocaleString("en-US") + " USD";
+    });
+    document.getElementById("f2ExtraMXN").textContent = "+" + fmtMXN(20*tc) + "–" + fmtMXN(45*tc) + " MXN";
+    document.getElementById("subF1").textContent = fmtMXN(DEV_MES*tc) + " MXN · $" + DEV_MES + " USD";
+    document.getElementById("subF2").textContent = fmtMXN(ACT_MIN*tc) + "–" + fmtMXN(ACT_MAX*tc) + " MXN · $" + ACT_MIN + "–$" + ACT_MAX + " USD";
+
+    // gráfica descendente 5..30 — monto visible solo en la barra activa
+    const perMax = TOTAL_USD / N_MIN_G;
+    graf.innerHTML = ""; eje.innerHTML = "";
+    for(let k=N_MIN_G; k<=N_MAX_G; k++){
+      const per = TOTAL_USD / k;
+      const col = document.createElement("button");
+      col.type = "button";
+      col.className = "col" + (k===n ? " activa" : "");
+      col.setAttribute("aria-label", k + " inversionistas: " + fmtMXN(per*tc) + " MXN por persona");
+      col.innerHTML =
+        '<span class="valor">' + fmtMXN(per*tc) + '</span>' +
+        '<div class="barra" style="height:' + Math.max(6, Math.round((per/perMax)*150)) + 'px"></div>';
+      col.addEventListener("click", ()=>setN(k));
+      graf.appendChild(col);
+      const lbl = document.createElement("span");
+      lbl.textContent = (k % 5 === 0 || k === n) ? k : "";
+      if(k===n) lbl.className = "activa";
+      eje.appendChild(lbl);
+    }
+
+    const per = TOTAL_USD / n;
+    document.getElementById("resTexto").innerHTML =
+      "Total de <b>~" + fmtMXN(TOTAL_USD*tc) + " MXN</b> (~" + fmtUSD2(TOTAL_USD) + ") dividido entre <b>" + n +
+      " inversionistas fundadores</b>:";
+    document.getElementById("resMXN").textContent = "~" + fmtMXN2(per*tc) + " MXN";
+    document.getElementById("resUSD").textContent = "~" + fmtUSD2(per) + " por persona";
+  }
+
+  inpInv.addEventListener("input", render);
+  inpTC.addEventListener("input", render);
+  render();
+})();
+</script>
+</body>
+</html>
