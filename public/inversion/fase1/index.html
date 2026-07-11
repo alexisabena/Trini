@@ -93,6 +93,17 @@
   .h2-sub{color:var(--tinta-suave);font-size:15px;margin-bottom:24px;max-width:62ch;}
 
   /* ---- curva descendente (firma) ---- */
+  .grafica-scroll{
+    overflow-x:auto;overflow-y:visible;
+    -webkit-overflow-scrolling:touch;
+    /* subtle scrollbar styling */
+    scrollbar-width:thin;
+    scrollbar-color:var(--linea) transparent;
+  }
+  .grafica-scroll::-webkit-scrollbar{height:4px;}
+  .grafica-scroll::-webkit-scrollbar-track{background:transparent;}
+  .grafica-scroll::-webkit-scrollbar-thumb{background:var(--linea);border-radius:2px;}
+  .grafica-inner{min-width:480px;}
   .grafica{
     display:flex;align-items:flex-end;gap:3px;
     height:210px;padding:0 4px;border-bottom:1.5px solid var(--cobalto-oscuro);
@@ -207,8 +218,12 @@
   <h2>La aportación baja con cada vecino que se suma</h2>
   <p class="h2-sub">Aportación única por inversionista según cuántos vecinos participen. Toca cualquier barra para ver el monto:</p>
 
-  <div class="grafica" id="grafica" aria-label="Aportación por inversionista según número de participantes"></div>
-  <div class="eje" id="eje"></div>
+  <div class="grafica-scroll">
+    <div class="grafica-inner">
+      <div class="grafica" id="grafica" aria-label="Aportación por inversionista según número de participantes"></div>
+      <div class="eje" id="eje"></div>
+    </div>
+  </div>
   <div class="eje-titulo">Número de inversionistas fundadores</div>
 
   <div class="resultado">
