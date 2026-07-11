@@ -120,6 +120,79 @@
   .eje span.activa{color:var(--cobalto-oscuro);font-weight:700;}
   .eje-titulo{text-align:center;font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--tinta-suave);margin-top:8px;font-weight:600;}
 
+  /* ---- mobile: single-bar slider (hidden on desktop) ---- */
+  .grafica-mobile{display:none;}
+  @media(max-width:640px){
+    .grafica-scroll,.eje-titulo{display:none;}
+    .grafica-mobile{display:block;}
+  }
+  .gm-chart{
+    display:flex;gap:14px;align-items:stretch;
+    height:280px;border-bottom:1.5px solid var(--cobalto-oscuro);
+  }
+  .gm-axis{
+    display:flex;flex-direction:column;justify-content:space-between;
+    align-items:flex-end;padding:4px 0;flex-shrink:0;
+  }
+  .gm-axis-total{
+    font-family:'Libre Caslon Text',Georgia,serif;
+    font-size:13px;font-weight:700;color:var(--cobalto-oscuro);
+    text-align:right;line-height:1.3;
+  }
+  .gm-axis-total span{
+    display:block;font-size:10.5px;font-weight:400;
+    color:var(--tinta-suave);font-family:'Archivo',sans-serif;
+  }
+  .gm-axis-zero{font-size:11px;color:var(--tinta-suave);font-weight:600;}
+  .gm-bar-area{
+    flex:1;position:relative;
+  }
+  /* fixed label area at top, bar grows from bottom */
+  .gm-per-label{
+    position:absolute;top:0;left:0;right:0;height:58px;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
+  }
+  .gm-per-mxn{
+    font-family:'Libre Caslon Text',Georgia,serif;
+    font-size:22px;font-weight:700;color:var(--cobalto-oscuro);
+  }
+  .gm-per-usd{font-size:12px;color:var(--tinta-suave);}
+  .gm-bar{
+    position:absolute;bottom:0;left:0;right:0;
+    background:linear-gradient(to top,var(--cobalto-oscuro) 0%,var(--cobalto) 100%);
+    border:1px solid var(--cobalto-oscuro);border-bottom:none;
+    border-radius:3px 3px 0 0;
+    transition:height .35s cubic-bezier(.4,0,.2,1);
+    min-height:4px;
+  }
+  /* slider */
+  .gm-slider-wrap{margin-top:18px;}
+  .gm-slider{
+    -webkit-appearance:none;appearance:none;
+    width:100%;height:3px;border-radius:2px;
+    background:var(--linea);outline:none;cursor:pointer;
+  }
+  .gm-slider::-webkit-slider-thumb{
+    -webkit-appearance:none;appearance:none;
+    width:28px;height:28px;border-radius:50%;
+    background:var(--cobalto-oscuro);border:3px solid #fff;
+    box-shadow:0 2px 10px rgba(0,0,0,.2);cursor:pointer;
+    transition:transform .15s ease;
+  }
+  .gm-slider:active::-webkit-slider-thumb{transform:scale(1.18);}
+  .gm-slider::-moz-range-thumb{
+    width:28px;height:28px;border-radius:50%;
+    background:var(--cobalto-oscuro);border:3px solid #fff;
+    box-shadow:0 2px 10px rgba(0,0,0,.2);cursor:pointer;
+  }
+  .gm-count{
+    margin-top:12px;text-align:center;
+    font-size:14px;font-weight:700;color:var(--cobalto-oscuro);
+  }
+  .gm-hint{
+    text-align:center;font-size:12px;color:var(--tinta-suave);margin-top:3px;
+  }
+
   .resultado{
     margin-top:26px;padding:22px 24px;border:1.5px solid var(--cobalto);
     border-radius:6px;background:#fff;display:grid;grid-template-columns:1fr auto;gap:16px;align-items:center;
@@ -225,6 +298,30 @@
     </div>
   </div>
   <div class="eje-titulo">Número de inversionistas fundadores</div>
+
+  <!-- mobile: single-bar slider (visible only on narrow screens) -->
+  <div class="grafica-mobile" id="graficaMobile">
+    <div class="gm-chart">
+      <div class="gm-axis">
+        <div class="gm-axis-total" id="gmAxisTotal">—<span>MXN · total</span></div>
+        <div class="gm-axis-zero">$0</div>
+      </div>
+      <div class="gm-bar-area">
+        <div class="gm-per-label">
+          <span class="gm-per-mxn" id="gmPerMXN">—</span>
+          <span class="gm-per-usd" id="gmPerUSD">—</span>
+        </div>
+        <div class="gm-bar" id="gmBar"></div>
+      </div>
+    </div>
+    <div class="gm-slider-wrap">
+      <input type="range" class="gm-slider" id="gmSlider"
+             min="3" max="30" step="1" value="10"
+             aria-label="Número de inversionistas fundadores">
+    </div>
+    <div class="gm-count" id="gmCount">10 inversionistas fundadores</div>
+    <div class="gm-hint">Desliza para ajustar el número de vecinos</div>
+  </div>
 
   <div class="resultado">
     <div class="texto" id="resTexto"></div>
@@ -388,7 +485,32 @@
       " inversionistas fundadores</b>:";
     document.getElementById("resMXN").textContent = "~" + fmtMXN2(per*tc) + " MXN";
     document.getElementById("resUSD").textContent = "~" + fmtUSD2(per) + " por persona";
+    renderMobile(n, tc);
   }
+
+  // ---- mobile single-bar chart ----
+  const GM_H = 280 - 58; // chart height minus fixed label area = usable bar px
+  const gmSlider = document.getElementById("gmSlider");
+
+  function renderMobile(n, tc){
+    const per   = TOTAL_USD / n;
+    // bar fills full height at N_MIN_G investors, shrinks proportionally
+    const barH  = Math.min(GM_H, Math.max(4, Math.round((N_MIN_G / n) * GM_H)));
+    document.getElementById("gmBar").style.height = barH + "px";
+    document.getElementById("gmAxisTotal").innerHTML =
+      fmtMXN(TOTAL_USD * tc) + "<span>MXN &middot; total</span>";
+    document.getElementById("gmPerMXN").textContent = "~" + fmtMXN2(per * tc) + " MXN";
+    document.getElementById("gmPerUSD").textContent  = "~" + fmtUSD2(per) + " por persona";
+    document.getElementById("gmCount").textContent   =
+      n + " inversionista" + (n === 1 ? "" : "s") + " fundador" + (n === 1 ? "" : "es");
+    gmSlider.value = n;
+  }
+
+  // mobile slider syncs → main input + full render
+  gmSlider.addEventListener("input", function(){
+    inpInv.value = gmSlider.value;
+    render();
+  });
 
   inpInv.addEventListener("input", render);
   inpTC.addEventListener("input", render);
