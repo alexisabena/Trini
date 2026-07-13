@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Atkinson_Hyperlegible, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
+import { DemoSessionProvider } from "@/lib/demo-session";
+import { MyBusinessesProvider } from "@/lib/my-businesses";
 
 const bodyFont = Atkinson_Hyperlegible({
   variable: "--font-sans",
@@ -28,7 +30,11 @@ export default function RootLayout({
       lang="es"
       className={`${bodyFont.variable} ${monoFont.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        <DemoSessionProvider>
+          <MyBusinessesProvider>{children}</MyBusinessesProvider>
+        </DemoSessionProvider>
+      </body>
     </html>
   );
 }

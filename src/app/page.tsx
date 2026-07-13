@@ -1,21 +1,31 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
+import { useRouter } from "next/navigation";
 import { Home, MessageCircleMore, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useDemoSession } from "@/lib/demo-session";
 
 const DEMO_OTP = "123456";
 
-type Step = "phone" | "otp" | "success";
+type Step = "phone" | "otp";
 
 export default function LoginPage() {
   const [step, setStep] = useState<Step>("phone");
   const [phone, setPhone] = useState("");
   const [otp, setOtp] = useState("");
   const [error, setError] = useState("");
+  const { authed, hydrated, login } = useDemoSession();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (hydrated && authed) {
+      router.replace("/notificaciones");
+    }
+  }, [hydrated, authed, router]);
 
   function handlePhoneSubmit(e: FormEvent) {
     e.preventDefault();
@@ -34,7 +44,8 @@ export default function LoginPage() {
       return;
     }
     setError("");
-    setStep("success");
+    login();
+    router.replace("/notificaciones");
   }
 
   return (
@@ -146,21 +157,6 @@ export default function LoginPage() {
                   </Button>
                 </div>
               </form>
-            )}
-
-            {step === "success" && (
-              <div className="flex flex-col items-center gap-3 py-6 text-center">
-                <div className="flex size-14 items-center justify-center rounded-full bg-primary/10 text-primary">
-                  <ShieldCheck className="size-7" aria-hidden />
-                </div>
-                <div>
-                  <p className="text-lg font-bold">¡Bienvenido de vuelta!</p>
-                  <p className="mt-1 text-base text-muted-foreground">
-                    Aquí seguiría el centro de notificaciones — siguiente
-                    pantalla a construir.
-                  </p>
-                </div>
-              </div>
             )}
           </CardContent>
         </Card>
