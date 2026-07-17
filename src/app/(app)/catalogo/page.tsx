@@ -3,10 +3,9 @@
 import { useMemo, useState } from "react";
 import { Store } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { cn } from "@/lib/utils";
+import { cn, pickRandom } from "@/lib/utils";
 import { ListingRow } from "@/components/listing-row";
 import { FeaturedListingCard } from "@/components/featured-listing-card";
-import { BusinessCarousel } from "@/components/business-carousel";
 import {
   CATEGORY_LABELS,
   LISTINGS,
@@ -38,21 +37,21 @@ export default function CatalogoPage() {
     [typeListings, category]
   );
 
-  // "Todas" mixes categories, so a single pinned featured item wouldn't be
-  // representative — it gets the same rotating carousel as Avisos instead,
-  // and every listing (featured or not) shows as a regular row below.
-  // A specific category has at most one featured listing (one paid slot
-  // per category), so that one gets pinned at the top as a spotlight card.
-  const featured = useMemo(
-    () => (category === "todas" ? [] : filtered.filter((l) => l.featured)),
-    [filtered, category]
+  // Every negocio listing is already a paying advertiser — there's no
+  // "the featured one" business, only a rotating promotional spot: one per
+  // category (occupant picked at random from that category's businesses),
+  // plus one discrete spot on "Todas" (picked from every negocio). The pick
+  // is stable while browsing the same view and re-rolls whenever the view
+  // changes — including returning to a view already left, since `filtered`
+  // gets a new reference each time `category` changes.
+  const spotlight = useMemo(
+    () => (type === "negocio" ? pickRandom(filtered) : undefined),
+    [type, filtered]
   );
   const regular = useMemo(
-    () =>
-      category === "todas" ? filtered : filtered.filter((l) => !l.featured),
-    [filtered, category]
+    () => filtered.filter((l) => l.id !== spotlight?.id),
+    [filtered, spotlight]
   );
-  const showCarousel = type === "negocio" && category === "todas";
 
   return (
     <div className="mx-auto flex max-w-md flex-col gap-4 px-4 py-5">
@@ -110,15 +109,19 @@ export default function CatalogoPage() {
         ))}
       </div>
 
-      {showCarousel && <BusinessCarousel />}
-
-      {featured.length > 0 && (
+      {spotlight && category === "todas" && (
         <ul className="flex flex-col gap-3">
-          {featured.map((listing) => (
-            <li key={listing.id}>
-              <FeaturedListingCard listing={listing} />
-            </li>
-          ))}
+          <li>
+            <ListingRow listing={spotlight} featured />
+          </li>
+        </ul>
+      )}
+
+      {spotlight && category !== "todas" && (
+        <ul className="flex flex-col gap-3">
+          <li>
+            <FeaturedListingCard listing={spotlight} />
+          </li>
         </ul>
       )}
 

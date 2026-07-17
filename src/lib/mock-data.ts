@@ -29,7 +29,6 @@ export type Listing = {
   phone: string;
   whatsapp: string;
   status: "activo" | "inactivo";
-  featured?: boolean;
 };
 
 export const LISTINGS: Listing[] = [
@@ -92,7 +91,6 @@ export const LISTINGS: Listing[] = [
     phone: "55 5555 6666",
     whatsapp: "5215555556666",
     status: "activo",
-    featured: true,
   },
   {
     id: "neg-limpieza-express",

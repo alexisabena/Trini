@@ -4,7 +4,18 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { CATEGORY_LABELS, type Listing } from "@/lib/mock-data";
 
-export function ListingRow({ listing }: { listing: Listing }) {
+export function ListingRow({
+  listing,
+  featured = false,
+}: {
+  listing: Listing;
+  /**
+   * Whether this listing currently occupies a rotating promotional spot —
+   * a presentational fact decided by the caller each render, not a
+   * property of the listing itself. See catalogo/page.tsx.
+   */
+  featured?: boolean;
+}) {
   return (
     <Link href={`/catalogo/${listing.id}`}>
       <Card className="shadow-sm transition-colors hover:bg-muted/40">
@@ -18,7 +29,7 @@ export function ListingRow({ listing }: { listing: Listing }) {
               <p className="min-w-0 flex-1 truncate text-sm text-muted-foreground">
                 {CATEGORY_LABELS[listing.category]}
               </p>
-              {listing.featured && (
+              {featured && (
                 <Badge variant="secondary" className="shrink-0 gap-1">
                   <Sparkles className="size-3" aria-hidden />
                   Destacado

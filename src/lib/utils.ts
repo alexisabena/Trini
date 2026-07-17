@@ -13,3 +13,8 @@ export function shuffle<T>(items: T[]): T[] {
   }
   return copy
 }
+
+export function pickRandom<T>(items: T[]): T | undefined {
+  if (items.length === 0) return undefined
+  return items[Math.floor(Math.random() * items.length)]
+}
