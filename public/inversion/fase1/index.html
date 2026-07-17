@@ -18,6 +18,8 @@
     --amarillo:#dfa53a;
     --linea:#d9dde4;
     --verde:#2e7d5b;
+    --lanzamiento:#a6491f;
+    --lanzamiento-tenue:#f7e9e1;
   }
   *{margin:0;padding:0;box-sizing:border-box;}
   @media (prefers-reduced-motion: reduce){ *{transition:none!important;animation:none!important;} }
@@ -92,40 +94,7 @@
   }
   .h2-sub{color:var(--tinta-suave);font-size:15px;margin-bottom:24px;max-width:62ch;}
 
-  /* ---- curva descendente (firma) ---- */
-  .grafica-scroll{
-    overflow-x:auto;overflow-y:visible;
-    -webkit-overflow-scrolling:touch;
-    /* subtle scrollbar styling */
-    scrollbar-width:thin;
-    scrollbar-color:var(--linea) transparent;
-  }
-  .grafica-scroll::-webkit-scrollbar{height:4px;}
-  .grafica-scroll::-webkit-scrollbar-track{background:transparent;}
-  .grafica-scroll::-webkit-scrollbar-thumb{background:var(--linea);border-radius:2px;}
-  .grafica-inner{min-width:480px;}
-  .grafica{
-    display:flex;align-items:flex-end;gap:3px;
-    height:210px;padding:0 4px;border-bottom:1.5px solid var(--cobalto-oscuro);
-    position:relative;
-  }
-  .col{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:6px;cursor:pointer;background:none;border:none;font-family:inherit;padding:0;}
-  .col .valor{font-size:11.5px;color:var(--cobalto-oscuro);font-weight:700;white-space:nowrap;visibility:hidden;}
-  .col.activa .valor{visibility:visible;}
-  .col .barra{width:100%;background:var(--cobalto-tenue);border:1px solid var(--cobalto);border-radius:2px 2px 0 0;transition:height .25s ease, background .2s ease;}
-  .col.activa .barra{background:var(--cobalto);}
-  .col:focus-visible{outline:2px solid var(--cobalto);outline-offset:2px;}
-  .eje{display:flex;gap:3px;padding:6px 4px 0;width:100%;}
-  .eje span{flex:1;text-align:center;font-size:11px;color:var(--tinta-suave);font-weight:600;}
-  .eje span.activa{color:var(--cobalto-oscuro);font-weight:700;}
-  .eje-titulo{text-align:center;font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--tinta-suave);margin-top:8px;font-weight:600;}
-
-  /* ---- mobile: single-bar slider (hidden on desktop) ---- */
-  .grafica-mobile{display:none;}
-  @media(max-width:640px){
-    .grafica-scroll,.eje-titulo{display:none;}
-    .grafica-mobile{display:block;}
-  }
+  /* ---- gráfica: control único con slider ---- */
   .gm-chart{
     display:flex;gap:14px;align-items:stretch;
     height:280px;border-bottom:1.5px solid var(--cobalto-oscuro);
@@ -221,6 +190,7 @@
   .p-labor{background:var(--amarillo);}
   .p-infra{background:var(--cobalto-tenue);border:1.5px solid var(--cobalto);}
   .p-dominio{background:#fff;border:1.5px dashed var(--tinta-suave);}
+  .p-adopcion{background:var(--lanzamiento-tenue);border:1.5px solid var(--lanzamiento);}
   .partida h4{font-size:15.5px;font-weight:600;color:var(--tinta);}
   .partida p{font-size:13.5px;color:var(--tinta-suave);margin-top:4px;max-width:52ch;}
   .partida .monto{text-align:right;white-space:nowrap;}
@@ -231,6 +201,9 @@
   .sello-fijo{background:var(--cobalto-tenue);color:var(--cobalto-oscuro);}
   .sello-sub{background:#fdf3e0;color:#8a5f13;}
   .sello-gratis{background:#e7f3ed;color:var(--verde);}
+  .sello-mxn{background:var(--lanzamiento-tenue);color:var(--lanzamiento);}
+  .partida a{color:var(--cobalto);text-decoration:underline;text-underline-offset:2px;}
+  .partida a:hover{color:var(--cobalto-oscuro);}
   .subtotal{display:grid;grid-template-columns:1fr auto;padding:12px 4px;border-bottom:1px solid var(--linea);font-size:14px;color:var(--tinta-suave);}
   .subtotal b{font-family:'Libre Caslon Text',Georgia,serif;color:var(--cobalto-oscuro);font-size:16px;}
   .total{
@@ -270,10 +243,11 @@
   </header>
 
   <section class="hero" aria-label="Costo total del primer semestre">
-    <div class="etiqueta">Costo total · Primer semestre (3 meses de desarrollo + 3 activa + dominio)</div>
+    <div class="etiqueta">Costo total · Primer semestre (desarrollo + plataforma activa + dominio + lanzamiento)</div>
     <div class="mxn" id="totalMXN">—<small>MXN</small></div>
     <div class="usd" id="totalUSD">—</div>
     <p class="nota-tc" id="notaTC"></p>
+    <p class="nota-tc" id="notaAdopcion"></p>
   </section>
 
   <div class="controles">
@@ -289,39 +263,28 @@
   </div>
 
   <h2>La aportación baja con cada vecino que se suma</h2>
-  <p class="h2-sub">Aportación única por inversionista según cuántos vecinos participen. Toca cualquier barra para ver el monto:</p>
+  <p class="h2-sub">Aportación única por inversionista según cuántos vecinos participen. Desliza para ver cómo baja la aportación de cada quien:</p>
 
-  <div class="grafica-scroll">
-    <div class="grafica-inner">
-      <div class="grafica" id="grafica" aria-label="Aportación por inversionista según número de participantes"></div>
-      <div class="eje" id="eje"></div>
+  <div class="gm-chart" id="graficaSlider">
+    <div class="gm-axis">
+      <div class="gm-axis-total" id="gmAxisTotal">—<span>MXN · total</span></div>
+      <div class="gm-axis-zero">$0</div>
+    </div>
+    <div class="gm-bar-area">
+      <div class="gm-per-label">
+        <span class="gm-per-mxn" id="gmPerMXN">—</span>
+        <span class="gm-per-usd" id="gmPerUSD">—</span>
+      </div>
+      <div class="gm-bar" id="gmBar"></div>
     </div>
   </div>
-  <div class="eje-titulo">Número de inversionistas fundadores</div>
-
-  <!-- mobile: single-bar slider (visible only on narrow screens) -->
-  <div class="grafica-mobile" id="graficaMobile">
-    <div class="gm-chart">
-      <div class="gm-axis">
-        <div class="gm-axis-total" id="gmAxisTotal">—<span>MXN · total</span></div>
-        <div class="gm-axis-zero">$0</div>
-      </div>
-      <div class="gm-bar-area">
-        <div class="gm-per-label">
-          <span class="gm-per-mxn" id="gmPerMXN">—</span>
-          <span class="gm-per-usd" id="gmPerUSD">—</span>
-        </div>
-        <div class="gm-bar" id="gmBar"></div>
-      </div>
-    </div>
-    <div class="gm-slider-wrap">
-      <input type="range" class="gm-slider" id="gmSlider"
-             min="3" max="30" step="1" value="10"
-             aria-label="Número de inversionistas fundadores">
-    </div>
-    <div class="gm-count" id="gmCount">10 inversionistas fundadores</div>
-    <div class="gm-hint">Desliza para ajustar el número de vecinos</div>
+  <div class="gm-slider-wrap">
+    <input type="range" class="gm-slider" id="gmSlider"
+           min="3" max="30" step="1" value="10"
+           aria-label="Número de inversionistas fundadores">
   </div>
+  <div class="gm-count" id="gmCount">10 inversionistas fundadores</div>
+  <div class="gm-hint">Desliza para ajustar el número de vecinos</div>
 
   <div class="resultado">
     <div class="texto" id="resTexto"></div>
@@ -333,7 +296,7 @@
   </div>
 
   <h2>¿En qué se invierte?</h2>
-  <p class="h2-sub">Desglose mensual por etapa del semestre. Durante el desarrollo la infraestructura opera en niveles gratuitos; al entrar en vivo con visibilidad comercial se requieren planes de pago.</p>
+  <p class="h2-sub">Desglose mensual por etapa del semestre, más los pagos únicos de arranque. Durante el desarrollo la infraestructura opera en niveles gratuitos; al entrar en vivo con visibilidad comercial se requieren planes de pago. Los materiales de lanzamiento son cotizaciones reales en pesos, ya con proveedor identificado.</p>
 
   <div class="fase-titulo"><h3>Meses 1–3 · Desarrollo</h3><span>autenticación, notificaciones, directorio de proveedores, reglamento</span></div>
   <div class="partida">
@@ -376,7 +339,7 @@
   </div>
   <div class="subtotal"><span>Subtotal mensual · plataforma activa</span><b id="subF2">—</b></div>
 
-  <div class="fase-titulo"><h3>Pago único inicial</h3><span></span></div>
+  <div class="fase-titulo"><h3>Pago único inicial</h3><span>dominio + materiales de lanzamiento y adopción</span></div>
   <div class="partida">
     <div class="punto p-dominio"></div>
     <div>
@@ -385,6 +348,39 @@
     </div>
     <div class="monto"><div class="mxn" data-usd-mxn="15">—</div><div class="usd" data-usd="15">—</div><div class="freq">pago único</div></div>
   </div>
+
+  <div class="partida">
+    <div class="punto p-adopcion"></div>
+    <div>
+      <h4>Dípticos de bienvenida — onboarding con QR</h4>
+      <p>1,000 dípticos impresos para repartir en el fraccionamiento: explican la plataforma y traen un código QR para agregar la web app a la pantalla de inicio del celular (es una web app — no hay descarga de tienda de apps, solo "agregar a inicio"). Cotización: <a href="https://www.360imprimir.com.mx/folletos-dipticos-5?id=9106&amp;productGroupId=124&amp;indexManagementId=2&amp;queryId=2deb204ed540fbecf1465ad6257488a8&amp;objectId=P4_BROCHURE_BIFOLD_9106" target="_blank" rel="noreferrer">360imprimir</a>.</p>
+      <span class="sello sello-mxn">Cotización fija en pesos — no varía con el tipo de cambio</span>
+    </div>
+    <div class="monto"><div class="mxn">$4,191.98</div><div class="usd">MXN</div><div class="freq">pago único</div></div>
+  </div>
+
+  <div class="partida">
+    <div class="punto p-adopcion"></div>
+    <div>
+      <h4>2 X-Banners de vinil</h4>
+      <p>Señalización física para la entrada del fraccionamiento y la Palapa durante el lanzamiento — visibilidad inmediata para los negocios fundadores desde el primer día. Cotización: <a href="https://www.360imprimir.com.mx/x-banner?id=27471&amp;indexManagementId=5&amp;queryId=d8d00d6167c03165dc1b6b93ccf84816&amp;objectId=P53_XBANNER_27471" target="_blank" rel="noreferrer">360imprimir</a>.</p>
+      <span class="sello sello-mxn">Cotización fija en pesos — no varía con el tipo de cambio</span>
+    </div>
+    <div class="monto"><div class="mxn">$1,005.00</div><div class="usd">MXN</div><div class="freq">pago único</div></div>
+  </div>
+
+  <div class="subtotal"><span>Subtotal cotizado (dípticos + banners)</span><b>$5,196.98 MXN</b></div>
+
+  <div class="partida">
+    <div class="punto p-adopcion"></div>
+    <div>
+      <h4>Material impreso adicional</h4>
+      <p>Excedente reservado para contratos de anunciantes, copias del reglamento y otro material de arranque aún sin cotizar.</p>
+    </div>
+    <div class="monto"><div class="mxn">$803.02</div><div class="usd">MXN</div><div class="freq">pago único</div></div>
+  </div>
+
+  <div class="subtotal"><span>Total · Materiales de lanzamiento y adopción</span><b>$6,000.00 MXN</b></div>
 
   <div class="total">
     <div>
@@ -406,6 +402,7 @@
       <li><b>Tipo de cambio conservador:</b> los montos en MXN usan $20.00 por dólar como colchón; el tipo de cambio de mercado ronda $17.50, así que el costo real en pesos probablemente sea menor. Los servicios se facturan en USD.</li>
       <li><b>Motor de desarrollo ($100 USD/mes):</b> partida fija que Alexis cubre directamente — no es negociable ni variable dentro del presupuesto.</li>
       <li><b>Mano de obra subvaluada:</b> el servicio de desarrollo y mantenimiento está deliberadamente por debajo del precio de mercado para hacer viable el arranque.</li>
+      <li><b>Materiales de lanzamiento ya cotizados:</b> 1,000 dípticos de onboarding y 2 X-Banners con proveedor identificado (360imprimir), $5,196.98 MXN en firme. Se redondea a $6,000 MXN para cubrir material impreso adicional (contratos, reglamento) aún sin cotizar.</li>
     </ul>
   </div>
 
@@ -419,10 +416,15 @@
   const ACT_MIN = 220, ACT_MAX = 245;  // meses 4–6 (plataforma activa)
   const ACT_MID = (ACT_MIN + ACT_MAX)/2;
   const DOMINIO = 15;
-  const TOTAL_USD = 3*DEV_MES + 3*ACT_MID + DOMINIO;
+  const TOTAL_USD = 3*DEV_MES + 3*ACT_MID + DOMINIO;       // servicios digitales, se convierten con el tipo de cambio
   const TOTAL_MIN = 3*DEV_MES + 3*ACT_MIN + DOMINIO;
   const TOTAL_MAX = 3*DEV_MES + 3*ACT_MAX + DOMINIO;
-  const N_MIN_G = 5, N_MAX_G = 30;
+  const ADOPCION_MXN = 6000;            // dípticos + x-banners + excedente — cotización fija en pesos, no varía con el tipo de cambio
+  const N_MIN_G = 5;                    // punto de referencia visual: la barra llega a altura máxima en 5 inversionistas
+
+  // Total general en pesos = servicios digitales (convertidos con tc) + materiales de lanzamiento (fijo en pesos)
+  function totalMXNAll(tc){ return TOTAL_USD*tc + ADOPCION_MXN; }
+  function totalMXNRango(tc){ return [TOTAL_MIN*tc + ADOPCION_MXN, TOTAL_MAX*tc + ADOPCION_MXN]; }
 
   const fmtMXN  = v => "$" + v.toLocaleString("es-MX",{minimumFractionDigits:0,maximumFractionDigits:0});
   const fmtMXN2 = v => "$" + v.toLocaleString("es-MX",{minimumFractionDigits:2,maximumFractionDigits:2});
@@ -430,23 +432,24 @@
 
   const inpInv = document.getElementById("inpInv");
   const inpTC  = document.getElementById("inpTC");
-  const graf   = document.getElementById("grafica");
-  const eje    = document.getElementById("eje");
-
-  function setN(n){ inpInv.value = n; render(); }
 
   function render(){
     const n  = Math.max(3, Math.min(30, parseInt(inpInv.value || "10", 10)));
     const tc = Math.max(1, parseFloat(inpTC.value || "20"));
 
-    document.getElementById("totalMXN").innerHTML = "~" + fmtMXN(TOTAL_USD*tc) + "<small>MXN</small>";
-    document.getElementById("totalUSD").textContent = "~" + fmtUSD2(TOTAL_USD);
+    const totalMXN = totalMXNAll(tc);
+    const [rangoMin, rangoMax] = totalMXNRango(tc);
+
+    document.getElementById("totalMXN").innerHTML = "~" + fmtMXN(totalMXN) + "<small>MXN</small>";
+    document.getElementById("totalUSD").textContent = "~" + fmtUSD2(TOTAL_USD) + " en servicios digitales";
     document.getElementById("notaTC").textContent =
-      "Convertido desde dólares (USD) a $" + tc.toFixed(2) + " MXN por dólar — tipo de cambio conservador; el de mercado es menor.";
-    document.getElementById("totalMXN2").textContent = "~" + fmtMXN(TOTAL_USD*tc) + " MXN";
-    document.getElementById("totalUSD2").textContent = "~" + fmtUSD2(TOTAL_USD);
+      "Servicios digitales convertidos desde dólares (USD) a $" + tc.toFixed(2) + " MXN por dólar — tipo de cambio conservador; el de mercado es menor.";
+    document.getElementById("notaAdopcion").textContent =
+      "Incluye " + fmtMXN(ADOPCION_MXN) + " MXN en materiales de lanzamiento (dípticos + banners) — cotización fija en pesos, no cambia con el tipo de cambio.";
+    document.getElementById("totalMXN2").textContent = "~" + fmtMXN(totalMXN) + " MXN";
+    document.getElementById("totalUSD2").textContent = "~" + fmtUSD2(TOTAL_USD) + " + " + fmtMXN(ADOPCION_MXN) + " MXN fijos";
     document.getElementById("rangoTotal").textContent =
-      "Rango: " + fmtMXN(TOTAL_MIN*tc) + " – " + fmtMXN(TOTAL_MAX*tc) + " MXN ($" + TOTAL_MIN.toLocaleString("en-US") + "–$" + TOTAL_MAX.toLocaleString("en-US") + " USD)";
+      "Rango: " + fmtMXN(rangoMin) + " – " + fmtMXN(rangoMax) + " MXN (servicios $" + TOTAL_MIN.toLocaleString("en-US") + "–$" + TOTAL_MAX.toLocaleString("en-US") + " USD + " + fmtMXN(ADOPCION_MXN) + " MXN fijos)";
 
     document.querySelectorAll("[data-usd-mxn]").forEach(el=>{
       el.textContent = fmtMXN(parseFloat(el.getAttribute("data-usd-mxn"))*tc) + " MXN";
@@ -459,54 +462,36 @@
     document.getElementById("subF1").textContent = fmtMXN(DEV_MES*tc) + " MXN · $" + DEV_MES + " USD";
     document.getElementById("subF2").textContent = fmtMXN(ACT_MIN*tc) + "–" + fmtMXN(ACT_MAX*tc) + " MXN · $" + ACT_MIN + "–$" + ACT_MAX + " USD";
 
-    // gráfica descendente 5..30 — monto visible solo en la barra activa
-    const perMax = TOTAL_USD / N_MIN_G;
-    graf.innerHTML = ""; eje.innerHTML = "";
-    for(let k=N_MIN_G; k<=N_MAX_G; k++){
-      const per = TOTAL_USD / k;
-      const col = document.createElement("button");
-      col.type = "button";
-      col.className = "col" + (k===n ? " activa" : "");
-      col.setAttribute("aria-label", k + " inversionistas: " + fmtMXN(per*tc) + " MXN por persona");
-      col.innerHTML =
-        '<span class="valor">' + fmtMXN(per*tc) + '</span>' +
-        '<div class="barra" style="height:' + Math.max(6, Math.round((per/perMax)*150)) + 'px"></div>';
-      col.addEventListener("click", ()=>setN(k));
-      graf.appendChild(col);
-      const lbl = document.createElement("span");
-      lbl.textContent = (k % 5 === 0 || k === n) ? k : "";
-      if(k===n) lbl.className = "activa";
-      eje.appendChild(lbl);
-    }
-
-    const per = TOTAL_USD / n;
+    const perMXN = totalMXN / n;
+    const perUSDEquiv = perMXN / tc;
     document.getElementById("resTexto").innerHTML =
-      "Total de <b>~" + fmtMXN(TOTAL_USD*tc) + " MXN</b> (~" + fmtUSD2(TOTAL_USD) + ") dividido entre <b>" + n +
+      "Total de <b>~" + fmtMXN(totalMXN) + " MXN</b> (servicios ~" + fmtUSD2(TOTAL_USD) + " + " + fmtMXN(ADOPCION_MXN) + " MXN de lanzamiento) dividido entre <b>" + n +
       " inversionistas fundadores</b>:";
-    document.getElementById("resMXN").textContent = "~" + fmtMXN2(per*tc) + " MXN";
-    document.getElementById("resUSD").textContent = "~" + fmtUSD2(per) + " por persona";
-    renderMobile(n, tc);
+    document.getElementById("resMXN").textContent = "~" + fmtMXN2(perMXN) + " MXN";
+    document.getElementById("resUSD").textContent = "~" + fmtUSD2(perUSDEquiv) + " por persona (equivalente)";
+    renderSlider(n, tc, totalMXN);
   }
 
-  // ---- mobile single-bar chart ----
-  const GM_H = 280 - 58; // chart height minus fixed label area = usable bar px
+  // ---- gráfica de barra única impulsada por el slider ----
+  const GM_H = 280 - 58; // altura del gráfico menos el área fija de etiqueta = px útiles para la barra
   const gmSlider = document.getElementById("gmSlider");
 
-  function renderMobile(n, tc){
-    const per   = TOTAL_USD / n;
-    // bar fills full height at N_MIN_G investors, shrinks proportionally
+  function renderSlider(n, tc, totalMXN){
+    const perMXN = totalMXN / n;
+    const perUSDEquiv = perMXN / tc;
+    // la barra llega a altura completa en N_MIN_G inversionistas y se reduce proporcionalmente
     const barH  = Math.min(GM_H, Math.max(4, Math.round((N_MIN_G / n) * GM_H)));
     document.getElementById("gmBar").style.height = barH + "px";
     document.getElementById("gmAxisTotal").innerHTML =
-      fmtMXN(TOTAL_USD * tc) + "<span>MXN &middot; total</span>";
-    document.getElementById("gmPerMXN").textContent = "~" + fmtMXN2(per * tc) + " MXN";
-    document.getElementById("gmPerUSD").textContent  = "~" + fmtUSD2(per) + " por persona";
+      fmtMXN(totalMXN) + "<span>MXN &middot; total</span>";
+    document.getElementById("gmPerMXN").textContent = "~" + fmtMXN2(perMXN) + " MXN";
+    document.getElementById("gmPerUSD").textContent  = "~" + fmtUSD2(perUSDEquiv) + " por persona";
     document.getElementById("gmCount").textContent   =
       n + " inversionista" + (n === 1 ? "" : "s") + " fundador" + (n === 1 ? "" : "es");
     gmSlider.value = n;
   }
 
-  // mobile slider syncs → main input + full render
+  // slider sincroniza → input principal + render completo
   gmSlider.addEventListener("input", function(){
     inpInv.value = gmSlider.value;
     render();
