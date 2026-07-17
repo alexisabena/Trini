@@ -1,6 +1,7 @@
 import { AlertTriangle, Bell } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { BusinessCarousel } from "@/components/business-carousel";
 import { NOTIFICATIONS } from "@/lib/mock-data";
 
 function formatDate(iso: string) {
@@ -20,6 +21,8 @@ export default function NotificacionesPage() {
         </div>
         <h1 className="text-xl font-bold tracking-tight">Avisos</h1>
       </div>
+
+      <BusinessCarousel />
 
       <ul className="flex flex-col gap-3">
         {NOTIFICATIONS.map((n) => (

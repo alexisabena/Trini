@@ -1,12 +1,12 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import Link from "next/link";
-import { ChevronRight, Sparkles, Store } from "lucide-react";
+import { Store } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import { ListingRow } from "@/components/listing-row";
+import { FeaturedListingCard } from "@/components/featured-listing-card";
+import { BusinessCarousel } from "@/components/business-carousel";
 import {
   CATEGORY_LABELS,
   LISTINGS,
@@ -38,6 +38,22 @@ export default function CatalogoPage() {
     [typeListings, category]
   );
 
+  // "Todas" mixes categories, so a single pinned featured item wouldn't be
+  // representative — it gets the same rotating carousel as Avisos instead,
+  // and every listing (featured or not) shows as a regular row below.
+  // A specific category has at most one featured listing (one paid slot
+  // per category), so that one gets pinned at the top as a spotlight card.
+  const featured = useMemo(
+    () => (category === "todas" ? [] : filtered.filter((l) => l.featured)),
+    [filtered, category]
+  );
+  const regular = useMemo(
+    () =>
+      category === "todas" ? filtered : filtered.filter((l) => !l.featured),
+    [filtered, category]
+  );
+  const showCarousel = type === "negocio" && category === "todas";
+
   return (
     <div className="mx-auto flex max-w-md flex-col gap-4 px-4 py-5">
       <div className="flex items-center gap-2">
@@ -55,10 +71,10 @@ export default function CatalogoPage() {
         }}
       >
         <TabsList className="!h-14 w-full">
-          <TabsTrigger value="proveedor" className="h-full text-base font-semibold">
+          <TabsTrigger value="proveedor" className="h-full text-sm font-semibold">
             Proveedores Oficiales
           </TabsTrigger>
-          <TabsTrigger value="negocio" className="h-full text-base font-semibold">
+          <TabsTrigger value="negocio" className="h-full text-sm font-semibold">
             Negocios de Vecinos
           </TabsTrigger>
         </TabsList>
@@ -94,38 +110,22 @@ export default function CatalogoPage() {
         ))}
       </div>
 
+      {showCarousel && <BusinessCarousel />}
+
+      {featured.length > 0 && (
+        <ul className="flex flex-col gap-3">
+          {featured.map((listing) => (
+            <li key={listing.id}>
+              <FeaturedListingCard listing={listing} />
+            </li>
+          ))}
+        </ul>
+      )}
+
       <ul className="flex flex-col gap-3">
-        {filtered.map((listing) => (
+        {regular.map((listing) => (
           <li key={listing.id}>
-            <Link href={`/catalogo/${listing.id}`}>
-              <Card className="shadow-sm transition-colors hover:bg-muted/40">
-                <CardContent className="flex items-center gap-3">
-                  <div className="flex size-12 shrink-0 items-center justify-center rounded-lg bg-secondary text-secondary-foreground">
-                    <Store className="size-5" aria-hidden />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-center gap-1.5">
-                      <p className="truncate text-base font-bold">
-                        {listing.name}
-                      </p>
-                      {listing.featured && (
-                        <Badge variant="secondary" className="shrink-0 gap-1">
-                          <Sparkles className="size-3" aria-hidden />
-                          Destacado
-                        </Badge>
-                      )}
-                    </div>
-                    <p className="truncate text-sm text-muted-foreground">
-                      {CATEGORY_LABELS[listing.category]}
-                    </p>
-                  </div>
-                  <ChevronRight
-                    className="size-5 shrink-0 text-muted-foreground"
-                    aria-hidden
-                  />
-                </CardContent>
-              </Card>
-            </Link>
+            <ListingRow listing={listing} />
           </li>
         ))}
         {filtered.length === 0 && (

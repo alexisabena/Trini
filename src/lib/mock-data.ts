@@ -118,6 +118,90 @@ export const LISTINGS: Listing[] = [
     whatsapp: "5215577778888",
     status: "activo",
   },
+  {
+    id: "neg-reparaciones-don-beto",
+    type: "negocio",
+    name: "Reparaciones Don Beto",
+    category: "plomeria",
+    description:
+      "Reparación de fugas menores, boiler y llaves de agua. Atención rápida para vecinos, sin necesidad de cita.",
+    hours: "Lun–Sáb 9:00–19:00",
+    phone: "55 8181 9191",
+    whatsapp: "5215581819191",
+    status: "activo",
+  },
+  {
+    id: "neg-electricidad-chuy",
+    type: "negocio",
+    name: "Electricidad Chuy",
+    category: "electricidad",
+    description:
+      "Instalación de contactos, lámparas y pequeños arreglos eléctricos dentro de casa. Vecino del fraccionamiento con más de 10 años de experiencia.",
+    hours: "Lun–Vie 10:00–18:00",
+    phone: "55 8282 9292",
+    whatsapp: "5215582829292",
+    status: "activo",
+  },
+  {
+    id: "neg-jardin-vivero-rosy",
+    type: "negocio",
+    name: "Jardín y Vivero Rosy",
+    category: "jardineria",
+    description:
+      "Venta de plantas, macetas y asesoría para el cuidado de jardines pequeños. Entrega a domicilio dentro del fraccionamiento.",
+    hours: "Mar–Dom 9:00–17:00",
+    phone: "55 8383 9393",
+    whatsapp: "5215583839393",
+    status: "activo",
+  },
+  {
+    id: "neg-cerrajeria-express-vecinal",
+    type: "negocio",
+    name: "Cerrajería Express Vecinal",
+    category: "seguridad",
+    description:
+      "Apertura de puertas, cambio de chapas y duplicado de llaves. Servicio a domicilio dentro del fraccionamiento.",
+    hours: "Todos los días 8:00–20:00",
+    phone: "55 8484 9494",
+    whatsapp: "5215584849494",
+    status: "activo",
+  },
+  {
+    id: "neg-tintoreria-marisol",
+    type: "negocio",
+    name: "Tintorería y Planchado Marisol",
+    category: "limpieza",
+    description:
+      "Lavado, planchado y entrega de ropa a domicilio. Recolección dos veces por semana dentro del fraccionamiento.",
+    hours: "Lun–Sáb 8:00–18:00",
+    phone: "55 8585 9595",
+    whatsapp: "5215585859595",
+    status: "activo",
+  },
+  {
+    id: "neg-tamales-dona-chuy",
+    type: "negocio",
+    name: "Tamales Doña Chuy",
+    category: "alimentos",
+    description:
+      "Tamales y atole hechos en casa, disponibles los fines de semana. Pedidos con un día de anticipación.",
+    hours: "Vie–Dom 8:00–13:00",
+    phone: "55 8686 9696",
+    whatsapp: "5215586869696",
+    status: "activo",
+  },
+  {
+    id: "neg-fotografia-caro",
+    type: "negocio",
+    name: "Fotografía de Eventos Caro",
+    category: "otros",
+    description:
+      "Cobertura fotográfica para cumpleaños, posadas y eventos familiares dentro del fraccionamiento.",
+    hours: "Disponible con cita previa",
+    phone: "55 8787 9797",
+    whatsapp: "5215587879797",
+    status: "activo",
+  },
 ];
 
 export type MyBusinessStatus = "en_revision" | "aprobado" | "bloqueado";
